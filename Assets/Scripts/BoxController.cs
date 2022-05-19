@@ -20,11 +20,42 @@ public class BoxController : MonoBehaviour
 
     private void OnEnable()
     {
+        EventManager.BoxDestroyed += BoxDestroyed;
         EventManager.UpdateNeighbours += UpdateNeigbours;
+    }
+
+    private void BoxDestroyed(GameObject destroyedBox)
+    {
+        if (LeftX == destroyedBox)
+        {
+            LeftX = null;
+        }
+        else if (RightX==destroyedBox)
+        {
+            RightX = null;
+        }
+        else if (UpY==destroyedBox)
+        {
+            UpY = null;
+        }
+        else if (DownY==destroyedBox)
+        {
+            DownY = null;
+        }
+        else if (ForwardZ==destroyedBox)
+        {
+            ForwardZ = null;
+        }
+        else if (BackZ==destroyedBox)
+        {
+            BackZ = null;
+        }
     }
 
     private void OnDisable()
     {
+        EventManager.BoxDestroyed -= BoxDestroyed;
+
         EventManager.UpdateNeighbours -= UpdateNeigbours;
     }
 

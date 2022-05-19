@@ -16,6 +16,18 @@ public class ButtonController : MonoBehaviour
             case ButtonTypes.Place:
                 EventManager.PlaceButtonClicked();
                 break;
+            case ButtonTypes.RotateLeft:
+                EventManager.RotateLeftButtonClicked();
+                break;
+            case ButtonTypes.RotateRight:
+                EventManager.RotateRightButtonClicked();
+                break;
+            case ButtonTypes.GoBack:
+                EventManager.GoBackButtonClicked();
+                break;
+            case ButtonTypes.Destroy:
+                EventManager.DestroyButtonClicked();
+                break;
                 
         }
     }

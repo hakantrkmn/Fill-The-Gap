@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using System.Linq;
+using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,20 +12,42 @@ public class PlayerController : MonoBehaviour
     public GameObject ChoosenBox;
     public GameObject TransparentBox;
     public float TransParentBoxMoveTime;
+    public List<BoxController> placedBoxes;
 
     Tween tw;
 
     private void OnEnable()
     {
+        EventManager.DestroyButtonClicked += DestroyButtonClicked;
         EventManager.BoxHitThePuzzle += PuzzleHitTheBox;
         EventManager.SendPuzzle += SendPuzzle;
         EventManager.UpdateChoosenBox += UpdateChoosenBox;
         EventManager.PlaceButtonClicked += PlaceBox;
     }
 
+    private void DestroyButtonClicked()
+    {
+        if (ChoosenBox.GetComponent<BoxController>()==placedBoxes.First())
+        {
+            
+        }
+        else
+        {
+            DOTween.Kill("move1");
+            placedBoxes.Remove(ChoosenBox.GetComponent<BoxController>());
+            EventManager.BoxDestroyed(ChoosenBox);
+            Destroy(ChoosenBox.gameObject);
+            ChoosenBox = placedBoxes[Random.Range(0, placedBoxes.Count)].gameObject;
+            //EventManager.UpdateNeighbours();
+            TransBoxMove(ChoosenBox);
+        }
+        
+    }
+
     private void OnDisable()
     {
         EventManager.BoxHitThePuzzle -= PuzzleHitTheBox;
+        EventManager.DestroyButtonClicked -= DestroyButtonClicked;
 
         EventManager.PlaceButtonClicked -= PlaceBox;
 
@@ -48,6 +72,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        placedBoxes.Add(ChoosenBox.GetComponent<BoxController>());
         TransparentBox = Instantiate(TransparentBox, transform.position, Quaternion.identity);
         TransBoxMove(ChoosenBox);
     }
@@ -64,6 +89,8 @@ public class PlayerController : MonoBehaviour
     public void PlaceBox()
     {
         var temp = Instantiate(Box, TransparentBox.transform.position, Quaternion.identity, transform);
+        placedBoxes.Add(temp.GetComponent<BoxController>());
+
         EventManager.UpdateNeighbours();
         ChoosenBox = temp;
         DOTween.Kill("move1");
