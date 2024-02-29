@@ -1,124 +1,57 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class BoxController : MonoBehaviour
 {
-    public GameObject LeftX;
-    public GameObject RightX;
-    public GameObject UpY;
-    public GameObject DownY;
-    public GameObject ForwardZ;
-    public GameObject BackZ;
+    public MeshRenderer meshRenderer;
+    Color _firstColor;
 
-    void Start()
-    {
-        UpdateNeigbours();
-    }
 
     private void OnEnable()
     {
-        EventManager.BoxDestroyed += BoxDestroyed;
-        EventManager.UpdateNeighbours += UpdateNeigbours;
-    }
-
-    private void BoxDestroyed(GameObject destroyedBox)
-    {
-        if (LeftX == destroyedBox)
-        {
-            LeftX = null;
-        }
-        else if (RightX==destroyedBox)
-        {
-            RightX = null;
-        }
-        else if (UpY==destroyedBox)
-        {
-            UpY = null;
-        }
-        else if (DownY==destroyedBox)
-        {
-            DownY = null;
-        }
-        else if (ForwardZ==destroyedBox)
-        {
-            ForwardZ = null;
-        }
-        else if (BackZ==destroyedBox)
-        {
-            BackZ = null;
-        }
+        EventManager.ChangeGameState += ChangeGameState;
     }
 
     private void OnDisable()
     {
-        EventManager.BoxDestroyed -= BoxDestroyed;
-
-        EventManager.UpdateNeighbours -= UpdateNeigbours;
+        EventManager.ChangeGameState -= ChangeGameState;
     }
 
-    private void OnMouseDown()
+    private void ChangeGameState(GameStates obj)
     {
-        EventManager.UpdateChoosenBox(gameObject);
+        if (obj== GameStates.CameraRotating)
+        {
+            ClearBoxColor();
+        }
     }
 
-
-    public void UpdateNeigbours()
+    private void Start()
     {
-        Collider[] hitColliders = Physics.OverlapBox(transform.position + new Vector3(1, 0, 0), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders)
-        {
-
-                LeftX = hitCollider.gameObject;
-        }
-
-        Collider[] hitColliders2 = Physics.OverlapBox(transform.position + new Vector3(-1, 0, 0), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders2)
-        {
-     
-                RightX = hitCollider.gameObject;
-               
-        }
-
-        Collider[] hitColliders3 = Physics.OverlapBox(transform.position + new Vector3(0, -1, 0), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders3)
-        {
-           
-                DownY = hitCollider.gameObject;
-                
-        }
-
-        Collider[] hitColliders4 = Physics.OverlapBox(transform.position + new Vector3(0, 1, 0), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders4)
-        {
-            
-                UpY = hitCollider.gameObject;
-               
-        }
-
-        Collider[] hitColliders5 = Physics.OverlapBox(transform.position + new Vector3(0, 0, -1), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders5)
-        {
-            
-                BackZ = hitCollider.gameObject;
-               
-        }
-
-        Collider[] hitColliders6 = Physics.OverlapBox(transform.position + new Vector3(0, 0, 1), Vector3.one * .1f);
-        foreach (var hitCollider in hitColliders6)
-        {
-            
-                ForwardZ = hitCollider.gameObject;
-               
-        }
+        _firstColor = meshRenderer.material.color;
     }
+    
+
+    public void ColorBoxRed()
+    {
+        meshRenderer.material.color = Color.Lerp(meshRenderer.material.color,Color.red, Time.deltaTime/.6f);
+
+    }
+
+    public void ClearBoxColor()
+    {
+        meshRenderer.material.color = _firstColor;
+
+    }
+    
 
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Puzzle"))
+        if (other.GetComponent<PuzzleCube>())
         {
             EventManager.BoxHitThePuzzle();
         }

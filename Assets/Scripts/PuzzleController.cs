@@ -8,7 +8,7 @@ public class PuzzleController : MonoBehaviour
     public List<GameObject> GapCubes;
     int DoneCubeCount;
     public Transform MovePoint;
-
+    public Transform middlePoint;
     void Start()
     {
         DoneCubeCount = 0;
@@ -16,6 +16,13 @@ public class PuzzleController : MonoBehaviour
         {
             GapCubes.Add(transform.GetChild(1).GetChild(i).gameObject);
         }
+
+        foreach (var cube in GetComponentsInChildren<PuzzleCube>())
+        {
+            middlePoint.position += cube.transform.position;
+        }
+
+        middlePoint.position /= GetComponentsInChildren<PuzzleCube>().Length;
     }
 
     private void OnEnable()

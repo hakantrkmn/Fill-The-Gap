@@ -3,25 +3,50 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
+using Sirenix.OdinInspector;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform Puzzle;
-    public Transform player;
+    PuzzleController Puzzle;
+    Transform player;
     public CinemachineVirtualCamera playerCameraNoFocus;
     public CinemachineVirtualCamera playerCameraWithFocus;
     public CinemachineVirtualCamera PuzzleCamera;
 
     private Vector3 mouseStartPos;
-    public float rotateSpeed;
-    private bool canRotate=true;
+    private bool canRotate = true;
+    [Range(3,10)]
+    public float rotationSpeed;
+    Transform lastPlacedBox;
 
     private void OnEnable()
     {
+        EventManager.BoxDestroyed += BoxDestroyed;
+        EventManager.BoxPlaced += BoxPlaced;
         EventManager.ChangeCameraToPuzzle += ChangeCameraToPuzzle;
         EventManager.SendButtonClicked += SendButtonClicked;
         EventManager.GoBackButtonClicked += GoBackButtonClicked;
+    }
+
+    private void BoxDestroyed(BoxController arg1, BoxController arg2)
+    {
+
+        if (lastPlacedBox == arg1)
+        {
+            lastPlacedBox = arg2.transform;
+            playerCameraNoFocus.transform.DOLookAt(lastPlacedBox.position, .5f);
+            playerCameraNoFocus.Follow = lastPlacedBox;
+
+        }
+    }
+
+    private void BoxPlaced(BoxController obj, Vector3 dir)
+    {
+        playerCameraNoFocus.transform.DOLookAt(obj.transform.position, .5f);
+        lastPlacedBox = obj.transform;
+        playerCameraNoFocus.Follow = lastPlacedBox;
     }
 
     private void SendButtonClicked()
@@ -39,6 +64,8 @@ public class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
+        EventManager.BoxDestroyed -= BoxDestroyed;
+        EventManager.BoxPlaced -= BoxPlaced;
         EventManager.SendButtonClicked -= SendButtonClicked;
         EventManager.ChangeCameraToPuzzle -= ChangeCameraToPuzzle;
         EventManager.GoBackButtonClicked -= GoBackButtonClicked;
@@ -46,12 +73,15 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        Puzzle = GameObject.FindObjectOfType<PuzzleController>().transform;
-        player = GameObject.FindObjectOfType<PlayerController>().transform;
+        Puzzle = FindObjectOfType<PuzzleController>();
+        player = FindObjectOfType<PlayerController>().transform;
+        lastPlacedBox = player.GetComponent<PlayerController>().startBox.transform;
+        playerCameraNoFocus.transform.DOLookAt(lastPlacedBox.position, .5f);
     }
 
     private void ChangeCameraToPuzzle()
     {
+        PuzzleCamera.transform.DOLookAt(Puzzle.middlePoint.position, .5f);
         playerCameraNoFocus.Priority = 0;
         PuzzleCamera.Priority = 10;
     }
@@ -60,36 +90,40 @@ public class CameraController : MonoBehaviour
     {
         if (canRotate)
         {
-            if (PuzzleCamera.Priority > playerCameraNoFocus.Priority)
+            if (Input.GetMouseButtonDown(0))
             {
-                if (Input.GetMouseButtonDown(0))
+                mouseStartPos = Input.mousePosition;
+            }
+            else if (Input.GetMouseButton(0))
+            {
+                if (Vector3.Distance(mouseStartPos, Input.mousePosition) > 30)
                 {
-                    mouseStartPos = Input.mousePosition;
-                }
-                else if (Input.GetMouseButton(0))
-                {
-                    var speed = (Input.mousePosition - mouseStartPos).normalized.x * rotateSpeed;
-                    RotateAround(PuzzleCamera.transform, Puzzle.position, Quaternion.Euler(0, -speed, 0));
+                    if (PuzzleCamera.Priority > playerCameraNoFocus.Priority)
+                    {
+                        EventManager.ChangeGameState(GameStates.CameraRotating);
+
+
+                        PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, Vector3.up,
+                            Input.GetAxis("Mouse X") * rotationSpeed);
+                        PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, PuzzleCamera.transform.right,
+                            Input.GetAxis("Mouse Y") * -rotationSpeed);
+                    }
+                    else
+                    {
+                        EventManager.ChangeGameState(GameStates.CameraRotating);
+                        playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position, Vector3.up,
+                            Input.GetAxis("Mouse X") * rotationSpeed);
+                        playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position,
+                            playerCameraNoFocus.transform.right, Input.GetAxis("Mouse Y") * -rotationSpeed);
+                    }
                 }
             }
-            else
+            else if (Input.GetMouseButtonUp(0))
             {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    mouseStartPos = Input.mousePosition;
-                }
-                else if (Input.GetMouseButton(0))
-                {
-                    var speed = (Input.mousePosition - mouseStartPos).normalized.x * rotateSpeed;
-                    RotateAround(playerCameraNoFocus.transform, player.position, Quaternion.Euler(0, -speed, 0));
-                }
+                EventManager.ChangeGameState(GameStates.PlaceBox);
             }
         }
     }
 
-    static void RotateAround(Transform transform, Vector3 pivotPoint, Quaternion rot)
-    {
-        transform.position = rot * (transform.position - pivotPoint) + pivotPoint;
-        transform.rotation = rot * transform.rotation;
-    }
+  
 }

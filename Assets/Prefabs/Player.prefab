@@ -44,11 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ab5418ef111ec40966c97f644a8f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Box: {fileID: 609402725520387167, guid: 8fdc8b083972ff642b0d85aa3abc5c53, type: 3}
+  gameState: 0
+  Box: {fileID: 609402725520387167, guid: 573dd9ac5a5044924aa2fee51514ded5, type: 3}
   ChoosenBox: {fileID: 4102739096393221176}
   TransparentBox: {fileID: 3460182439481652004, guid: b9c5db80a03dc9d4b9a3099f5577515e,
     type: 3}
   TransParentBoxMoveTime: 0.6
+  placedBoxes: []
+  timer: 0
+  boxLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1001 &3502344706726832231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -80,7 +86,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: ff8ee03229d47f44eb939837c1b549ed, type: 2}
+      objectReference: {fileID: 2100000, guid: e0f4f2ccf0b8f4821b0823f2f13b617c, type: 2}
     - target: {fileID: 609402725520387164, guid: 8fdc8b083972ff642b0d85aa3abc5c53,
         type: 3}
       propertyPath: m_RootOrder

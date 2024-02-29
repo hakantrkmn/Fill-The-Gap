@@ -8,3 +8,19 @@ public enum ButtonTypes
     GoBack,
     Destroy,
 }
+
+public enum GameStates
+{
+    PlaceBox,
+    BoxDestroyed,
+    BoxPlaced,
+    CameraRotating,
+    
+}
+
+public enum ClickMode
+{
+    Place,
+    Destroy
+    
+}

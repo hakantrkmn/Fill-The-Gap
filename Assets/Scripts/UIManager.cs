@@ -6,9 +6,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public Button placeButton;
     public Button sendButton;
-    public Button destroyButton;
 
     public Button goBackButton;
 
@@ -25,9 +23,7 @@ public class UIManager : MonoBehaviour
 
     private void GoBackButtonClicked()
     {
-        placeButton.gameObject.SetActive(true);
         sendButton.gameObject.SetActive(true);
-        destroyButton.gameObject.SetActive(true);
 
         goBackButton.gameObject.SetActive(false);
     }
@@ -41,8 +37,6 @@ public class UIManager : MonoBehaviour
     private void ChangeCameraToPuzzle()
     {
         
-        placeButton.gameObject.SetActive(false);
-        destroyButton.gameObject.SetActive(false);
         sendButton.gameObject.SetActive(false);
         goBackButton.gameObject.SetActive(true);
     }

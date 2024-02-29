@@ -1,58 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using System;
-using System.Linq;
-using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject Box;
-    public GameObject ChoosenBox;
-    public GameObject TransparentBox;
-    public float TransParentBoxMoveTime;
+    public GameStates gameState;
+    public ClickMode clickMode;
+    public GameObject box;
+    public BoxController startBox;
     public List<BoxController> placedBoxes;
 
-    Tween tw;
+    private Tween tw;
+    float _timer;
+    public LayerMask boxLayer;
 
     private void OnEnable()
     {
-        EventManager.DestroyButtonClicked += DestroyButtonClicked;
+        EventManager.ChangeClickMode += mode => clickMode = mode;
         EventManager.BoxHitThePuzzle += PuzzleHitTheBox;
         EventManager.SendPuzzle += SendPuzzle;
-        EventManager.UpdateChoosenBox += UpdateChoosenBox;
-        EventManager.PlaceButtonClicked += PlaceBox;
+        EventManager.ChangeGameState += state => gameState = state;
     }
 
-    private void DestroyButtonClicked()
-    {
-        if (ChoosenBox.GetComponent<BoxController>()==placedBoxes.First())
-        {
-            
-        }
-        else
-        {
-            DOTween.Kill("move1");
-            placedBoxes.Remove(ChoosenBox.GetComponent<BoxController>());
-            EventManager.BoxDestroyed(ChoosenBox);
-            Destroy(ChoosenBox.gameObject);
-            ChoosenBox = placedBoxes[Random.Range(0, placedBoxes.Count)].gameObject;
-            //EventManager.UpdateNeighbours();
-            TransBoxMove(ChoosenBox);
-        }
-        
-    }
 
     private void OnDisable()
     {
+        EventManager.ChangeClickMode -= mode => clickMode = mode;
+        EventManager.ChangeGameState -= state => gameState = state;
         EventManager.BoxHitThePuzzle -= PuzzleHitTheBox;
-        EventManager.DestroyButtonClicked -= DestroyButtonClicked;
-
-        EventManager.PlaceButtonClicked -= PlaceBox;
-
         EventManager.SendPuzzle -= SendPuzzle;
-        EventManager.UpdateChoosenBox -= UpdateChoosenBox;
     }
 
     private void PuzzleHitTheBox()
@@ -62,104 +38,68 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void UpdateChoosenBox(GameObject obj)
+    private void DestroyButtonClicked(BoxController selectedBox)
     {
-        EventManager.UpdateNeighbours();
-        ChoosenBox = obj;
-        DOTween.Kill("move1");
-        TransBoxMove(ChoosenBox);
+        if (selectedBox != startBox)
+        {
+            placedBoxes.Remove(selectedBox);
+            EventManager.BoxDestroyed(selectedBox,placedBoxes.Count == 0 ? startBox:placedBoxes[Random.Range(0,placedBoxes.Count)]);
+            selectedBox.gameObject.SetActive(false);
+        }
     }
 
-    void Start()
+    private Ray ray;
+    private RaycastHit hit;
+    private BoxController lastHitBox;
+    private void Update()
     {
-        placedBoxes.Add(ChoosenBox.GetComponent<BoxController>());
-        TransparentBox = Instantiate(TransparentBox, transform.position, Quaternion.identity);
-        TransBoxMove(ChoosenBox);
+        if (gameState == GameStates.PlaceBox)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (clickMode==ClickMode.Destroy)
+                {
+                    ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(ray, out hit, 100, boxLayer))
+                    {
+                        DestroyButtonClicked(hit.transform.GetComponent<BoxController>());
+                        _timer = 0;
+                        gameState = GameStates.PlaceBox;
+                        return;
+                    }
+                }
+                else
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, 100, boxLayer))
+                    {
+                        //lastHitBox.ClearBoxColor();
+                        PlaceBox(hit.transform.position, hit.normal);
+                        _timer = 0;
+                        gameState = GameStates.PlaceBox;
+                        return;
+                    }
+                }
+            }
+        }
+        else if (gameState == GameStates.BoxDestroyed)
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+                gameState = GameStates.PlaceBox;
+            }
+        }
     }
-
 
     private void SendPuzzle(Transform MovePoint)
     {
-        TransparentBox.GetComponent<MeshRenderer>().enabled = false;
-        DOTween.Kill("move1");
         tw = transform.DOMoveZ(MovePoint.position.z, 4).OnComplete(() => { EventManager.PuzzleArrived(); });
     }
-
-
-    public void PlaceBox()
+    void PlaceBox(Vector3 hitPosition, Vector3 pos)
     {
-        var temp = Instantiate(Box, TransparentBox.transform.position, Quaternion.identity, transform);
+        var temp = Instantiate(box, hitPosition + pos, Quaternion.identity, transform);
         placedBoxes.Add(temp.GetComponent<BoxController>());
-
-        EventManager.UpdateNeighbours();
-        ChoosenBox = temp;
-        DOTween.Kill("move1");
-        TransBoxMove(ChoosenBox);
-    }
-
-
-    public void TransBoxMove(GameObject Box)
-    {
-        Sequence move = DOTween.Sequence().SetId("move1");
-        if (Box.GetComponent<BoxController>().LeftX == null)
-        {
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(1, 0, 0);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        if (Box.GetComponent<BoxController>().RightX == null)
-        {
-
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(-1, 0, 0);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        if (Box.GetComponent<BoxController>().UpY == null)
-        {
-
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(0, 1, 0);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        if (Box.GetComponent<BoxController>().DownY == null)
-        {
-
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(0, -1, 0);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        if (Box.GetComponent<BoxController>().ForwardZ == null)
-        {
-
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(0, 0, 1);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        if (Box.GetComponent<BoxController>().BackZ == null)
-        {
-
-            move.AppendCallback(() =>
-            {
-                TransparentBox.transform.position = Box.transform.position + new Vector3(0, 0, -1);
-            });
-            move.AppendInterval(TransParentBoxMoveTime);
-        }
-
-        move.SetLoops(-1, LoopType.Restart);
+        EventManager.BoxPlaced(temp.GetComponent<BoxController>(),pos);
     }
 }
