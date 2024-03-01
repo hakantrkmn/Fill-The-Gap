@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
 
     private void OnEnable()
     {
+        EventManager.BoxHitThePuzzle += () => canRotate = true;
         EventManager.BoxDestroyed += BoxDestroyed;
         EventManager.BoxPlaced += BoxPlaced;
         EventManager.ChangeCameraToPuzzle += ChangeCameraToPuzzle;
@@ -64,6 +65,7 @@ public class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
+        EventManager.BoxHitThePuzzle -= () => canRotate = true;
         EventManager.BoxDestroyed -= BoxDestroyed;
         EventManager.BoxPlaced -= BoxPlaced;
         EventManager.SendButtonClicked -= SendButtonClicked;
@@ -100,7 +102,7 @@ public class CameraController : MonoBehaviour
                 {
                     if (PuzzleCamera.Priority > playerCameraNoFocus.Priority)
                     {
-                        EventManager.ChangeGameState(GameStates.CameraRotating);
+                        //EventManager.ChangeGameState(GameStates.CameraRotating);
 
 
                         PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, Vector3.up,
@@ -118,7 +120,7 @@ public class CameraController : MonoBehaviour
                     }
                 }
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (Input.GetMouseButtonUp(0) && GameManager.instance.gameState != GameStates.OnPuzzle)
             {
                 EventManager.ChangeGameState(GameStates.PlaceBox);
             }

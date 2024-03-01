@@ -5,20 +5,13 @@ using UnityEngine;
 
 public class PuzzleCube : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnMouseDown()
     {
-        EventManager.ChangeCameraToPuzzle();
+        if (GameManager.instance.gameState == GameStates.PlaceBox)
+        {
+            EventManager.ChangeGameState(GameStates.OnPuzzle);
+            EventManager.ChangeCameraToPuzzle();
+
+        }
     }
 }

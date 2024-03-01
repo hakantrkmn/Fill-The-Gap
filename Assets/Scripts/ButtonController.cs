@@ -14,6 +14,7 @@ public class ButtonController : MonoBehaviour
                 EventManager.SendButtonClicked();
                 break;
             case ButtonTypes.GoBack:
+                EventManager.ChangeGameState(GameStates.PlaceBox);
                 EventManager.GoBackButtonClicked();
                 break;
                 

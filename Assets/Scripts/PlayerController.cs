@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameStates gameState;
-    public ClickMode clickMode;
     public GameObject box;
     public BoxController startBox;
     public List<BoxController> placedBoxes;
@@ -13,20 +13,23 @@ public class PlayerController : MonoBehaviour
     private Tween tw;
     float _timer;
     public LayerMask boxLayer;
+    private Vector3 _firstPos;
+
+
+    private void Start()
+    {
+        _firstPos = transform.position;
+    }
 
     private void OnEnable()
     {
-        EventManager.ChangeClickMode += mode => clickMode = mode;
         EventManager.BoxHitThePuzzle += PuzzleHitTheBox;
         EventManager.SendPuzzle += SendPuzzle;
-        EventManager.ChangeGameState += state => gameState = state;
     }
 
 
     private void OnDisable()
     {
-        EventManager.ChangeClickMode -= mode => clickMode = mode;
-        EventManager.ChangeGameState -= state => gameState = state;
         EventManager.BoxHitThePuzzle -= PuzzleHitTheBox;
         EventManager.SendPuzzle -= SendPuzzle;
     }
@@ -35,6 +38,7 @@ public class PlayerController : MonoBehaviour
     {
         tw.Kill();
         Debug.Log("Level Failed");
+        transform.DOMove(_firstPos, 1f);
     }
 
 
@@ -53,18 +57,18 @@ public class PlayerController : MonoBehaviour
     private BoxController lastHitBox;
     private void Update()
     {
-        if (gameState == GameStates.PlaceBox)
+        if (GameManager.instance.gameState == GameStates.PlaceBox)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (clickMode==ClickMode.Destroy)
+                if (GameManager.instance.clickMode==ClickMode.Destroy)
                 {
                     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out hit, 100, boxLayer))
                     {
                         DestroyButtonClicked(hit.transform.GetComponent<BoxController>());
                         _timer = 0;
-                        gameState = GameStates.PlaceBox;
+                        GameManager.instance.gameState = GameStates.PlaceBox;
                         return;
                     }
                 }
@@ -77,23 +81,18 @@ public class PlayerController : MonoBehaviour
                         //lastHitBox.ClearBoxColor();
                         PlaceBox(hit.transform.position, hit.normal);
                         _timer = 0;
-                        gameState = GameStates.PlaceBox;
+                        GameManager.instance.gameState = GameStates.PlaceBox;
                         return;
                     }
                 }
             }
         }
-        else if (gameState == GameStates.BoxDestroyed)
-        {
-            if (Input.GetMouseButtonUp(0))
-            {
-                gameState = GameStates.PlaceBox;
-            }
-        }
+       
     }
 
     private void SendPuzzle(Transform MovePoint)
     {
+        GameManager.instance.gameState = GameStates.PuzzleOnWay;
         tw = transform.DOMoveZ(MovePoint.position.z, 4).OnComplete(() => { EventManager.PuzzleArrived(); });
     }
     void PlaceBox(Vector3 hitPosition, Vector3 pos)
