@@ -19,6 +19,7 @@ public static class EventManager
 
     
     public static Func<LevelData> GetLevelData;
+    public static Func<Vector3> GetStartCubePos;
 
     
     

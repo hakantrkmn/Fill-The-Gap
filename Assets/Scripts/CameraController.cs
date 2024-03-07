@@ -17,7 +17,6 @@ public class CameraController : MonoBehaviour
 
     private Vector3 mouseStartPos;
     private bool canRotate = true;
-    [Range(3,10)]
     public float rotationSpeed;
     Transform lastPlacedBox;
 
@@ -124,17 +123,17 @@ public class CameraController : MonoBehaviour
                     {
 
                         PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, Vector3.up,
-                            Input.GetAxis("Mouse X") * rotationSpeed);
+                            Input.GetAxis("Mouse X") * rotationSpeed* Time.deltaTime);
                         PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, PuzzleCamera.transform.right,
-                            Input.GetAxis("Mouse Y") * -rotationSpeed);
+                            Input.GetAxis("Mouse Y") * -rotationSpeed * Time.deltaTime);
                     }
                     else
                     {
                         EventManager.ChangeGameState(GameStates.CameraRotating);
                         playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position, Vector3.up,
-                            Input.GetAxis("Mouse X") * rotationSpeed);
+                            Input.GetAxis("Mouse X") * rotationSpeed* Time.deltaTime);
                         playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position,
-                            playerCameraNoFocus.transform.right, Input.GetAxis("Mouse Y") * -rotationSpeed);
+                            playerCameraNoFocus.transform.right, Input.GetAxis("Mouse Y") * -rotationSpeed* Time.deltaTime);
                     }
                 }
             }

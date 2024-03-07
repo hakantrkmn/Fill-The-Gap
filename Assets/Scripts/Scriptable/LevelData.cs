@@ -8,7 +8,7 @@ public class LevelData : ScriptableObject
 {
     public int currentLevelIndex;
     public int maxLevelCount;
-
+    public bool firstPlay;
     [Button]
     public void Save()
     {

@@ -1,34 +1,51 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PuzzleController : MonoBehaviour
 {
-    public List<GameObject> GapCubes;
+    public Transform destinationCube;
+    List<GameObject> gapCubes = new List<GameObject>();
     int DoneCubeCount;
     public Transform MovePoint;
     public Transform middlePoint;
     void Start()
     {
         DoneCubeCount = 0;
-        for (int i = 0; i < transform.GetChild(1).childCount; i++)
-        {
-            GapCubes.Add(transform.GetChild(1).GetChild(i).gameObject);
-        }
 
+        foreach (var cube in GetComponentsInChildren<GapCube>())
+        {
+            gapCubes.Add(cube.gameObject);
+        }
+        
         foreach (var cube in GetComponentsInChildren<PuzzleCube>())
         {
             middlePoint.position += cube.transform.position;
         }
 
         middlePoint.position /= GetComponentsInChildren<PuzzleCube>().Length;
+        
+        CreateDestinationCube();
+    }
+
+    void CreateDestinationCube()
+    {
+        var pos = new Vector3(EventManager.GetStartCubePos().x, EventManager.GetStartCubePos().y, MovePoint.position.z);
+        destinationCube.position = pos;
     }
 
     private void OnEnable()
     {
+        EventManager.LevelCompleted += LevelCompleted;
         EventManager.SendButtonClicked += SendButtonClicked;
         EventManager.PuzzleArrived += CheckCubes;
+    }
+
+    private void LevelCompleted()
+    {
+        destinationCube.gameObject.SetActive(false);
     }
 
     private void SendButtonClicked()
@@ -38,8 +55,8 @@ public class PuzzleController : MonoBehaviour
 
     private void OnDisable()
     {
+        EventManager.LevelCompleted -= LevelCompleted;
         EventManager.SendButtonClicked -= SendButtonClicked;
-
         EventManager.PuzzleArrived -= CheckCubes;
     }
 
@@ -48,7 +65,7 @@ public class PuzzleController : MonoBehaviour
 
         EventManager.CheckCubes();
 
-        foreach (var cube in GapCubes)
+        foreach (var cube in gapCubes)
         {
             if (cube.GetComponent<GapCube>().IsDone)
             {
@@ -56,7 +73,7 @@ public class PuzzleController : MonoBehaviour
             }
         }
 
-        if (DoneCubeCount == GapCubes.Count)
+        if (DoneCubeCount == gapCubes.Count)
         {
             Debug.Log("Level Done");
             EventManager.LevelCompleted();

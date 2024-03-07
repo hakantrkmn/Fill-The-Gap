@@ -349,6 +349,109 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1886706913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1886706916}
+  - component: {fileID: 1886706915}
+  - component: {fileID: 1886706914}
+  m_Layer: 0
+  m_Name: Easy Save 3 Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1886706914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886706913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9107aee0ced90422da95f0b31680501f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 94c42707-22ce-4d03-822a-41853942b860
+  saveEvent: 1
+  loadEvent: 1
+  settings:
+    _location: 4
+    path: SaveFile.es3
+    encryptionType: 0
+    compressionType: 0
+    encryptionPassword: password
+    directory: 0
+    format: 0
+    prettyPrint: 1
+    bufferSize: 2048
+    saveChildren: 1
+    postprocessRawCachedData: 0
+    typeChecking: 1
+    safeReflection: 1
+    memberReferenceMode: 0
+    referenceMode: 2
+    serializationDepthLimit: 64
+    assemblyNames:
+    - Assembly-CSharp-firstpass
+    - Assembly-CSharp
+    showAdvancedSettings: 0
+--- !u!114 &1886706915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886706913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a83408fcc9044c4fbc7e5d09a369ab6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  excludeObjects: []
+  openPrefabs: 0
+  prefabs: []
+  idRef:
+    _Keys: 6f725da7304afc47da432db030067e7a52c1d3e3d771fc6dbff35fe67df59931839e608d1e74912f3d64adb2a5074a05f44497ed38a15a7b8447faa96862541e6fcbe73ceb16ca3122a0cb3098f36739acfc106d25f1cb61b324963b0fbc65190d80e1ac72aabb0a1f21ec7e76354f023f1c1e40bcd8800392080500bf61c341
+    _Values:
+    - {fileID: 1070661177}
+    - {fileID: 1070661175}
+    - {fileID: 1070661176}
+    - {fileID: 1070661174}
+    - {fileID: 1070661178}
+    - {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+    - {fileID: 45697242}
+    - {fileID: 45697244}
+    - {fileID: 45697243}
+    - {fileID: 11500000, guid: 0c58a539b68be49ac801be42e0c37d20, type: 3}
+    - {fileID: 1548298813}
+    - {fileID: 1548298812}
+    - {fileID: 1548298814}
+    - {fileID: 11500000, guid: 35a929b32e51d467e853e2cb6c8d42cd, type: 3}
+    - {fileID: 11500000, guid: b61f2a3b1c7a94c33bdc1b2902a68a37, type: 3}
+    - {fileID: 11400000, guid: a1305e2a2078941758e5c86f0d61f904, type: 2}
+--- !u!4 &1886706916
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886706913}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -356,3 +459,4 @@ SceneRoots:
   - {fileID: 1070661178}
   - {fileID: 45697244}
   - {fileID: 1548298814}
+  - {fileID: 1886706916}

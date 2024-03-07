@@ -6,12 +6,10 @@ using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject box;
+    public GameObject boxPrefab;
     public BoxController startBox;
-    public List<BoxController> placedBoxes;
+    List<BoxController> placedBoxes = new List<BoxController>();
 
-    private Tween tw;
-    float _timer;
     public LayerMask boxLayer;
     private Vector3 _firstPos;
     public AnimationCurve puzzleEase;
@@ -23,20 +21,27 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        EventManager.GetStartCubePos += GetStartCubePos;
         EventManager.BoxHitThePuzzle += PuzzleHitTheBox;
         EventManager.SendPuzzle += SendPuzzle;
+    }
+
+    private Vector3 GetStartCubePos()
+    {
+        return startBox.transform.position;
     }
 
 
     private void OnDisable()
     {
+        EventManager.GetStartCubePos -= GetStartCubePos;
         EventManager.BoxHitThePuzzle -= PuzzleHitTheBox;
         EventManager.SendPuzzle -= SendPuzzle;
     }
 
     private void PuzzleHitTheBox()
     {
-        tw.Kill();
+        DOTween.Kill("Fill");
         transform.DOMove(_firstPos, 1f).SetDelay(.3f);
     }
 
@@ -66,9 +71,7 @@ public class PlayerController : MonoBehaviour
                     if (Physics.Raycast(ray, out hit, 100, boxLayer))
                     {
                         DestroyButtonClicked(hit.transform.GetComponent<BoxController>());
-                        _timer = 0;
                         GameManager.instance.gameState = GameStates.PlaceBox;
-                        return;
                     }
                 }
                 else
@@ -77,11 +80,8 @@ public class PlayerController : MonoBehaviour
                     RaycastHit hit;
                     if (Physics.Raycast(ray, out hit, 100, boxLayer))
                     {
-                        //lastHitBox.ClearBoxColor();
                         PlaceBox(hit.transform.position, hit.normal);
-                        _timer = 0;
                         GameManager.instance.gameState = GameStates.PlaceBox;
-                        return;
                     }
                 }
             }
@@ -92,11 +92,11 @@ public class PlayerController : MonoBehaviour
     private void SendPuzzle(Transform MovePoint)
     {
         GameManager.instance.gameState = GameStates.PuzzleOnWay;
-        tw = transform.DOMoveZ(MovePoint.position.z, 2).SetEase(puzzleEase).OnComplete(() => { EventManager.PuzzleArrived(); });
+        transform.DOMoveZ(MovePoint.position.z, 2).SetId("Fill").SetEase(puzzleEase).OnComplete(() => { EventManager.PuzzleArrived(); });
     }
     void PlaceBox(Vector3 hitPosition, Vector3 pos)
     {
-        var temp = Instantiate(box, hitPosition + pos, Quaternion.identity, transform);
+        var temp = Instantiate(boxPrefab, hitPosition + pos, Quaternion.identity, transform);
         placedBoxes.Add(temp.GetComponent<BoxController>());
         EventManager.BoxPlaced(temp.GetComponent<BoxController>(),pos);
     }

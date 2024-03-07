@@ -7,7 +7,17 @@ public class LevelLoader : MonoBehaviour
 {
     void Start()
     {
-        var index = EventManager.GetLevelData().currentLevelIndex;
+        var data = EventManager.GetLevelData();
+        if (ES3.KeyExists("level"))
+        {
+            data = ES3.Load<LevelData>("level");
+        }
+        else
+        {
+            ES3.Save("level",data);
+        }
+
+        var index = data.currentLevelIndex;
         SceneManager.LoadScene(index + 1);
     }
 

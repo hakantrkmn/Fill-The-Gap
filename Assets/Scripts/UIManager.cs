@@ -8,12 +8,11 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public Transform sendButton;
+    public CanvasGroup startScreen;
+    public CanvasGroup buildScreen;
+    public CanvasGroup puzzleInspectScreen;
+    public CanvasGroup levelCompletedScreen;
 
-    public Transform goBackButton;
-
-    public GameObject levelCompletedPanel;
-    public Transform toggleButton;
 
     private void OnEnable()
     {
@@ -26,32 +25,29 @@ public class UIManager : MonoBehaviour
 
     private void BoxHitThePuzzle()
     {
-        sendButton.DOScale(1, .3f).SetEase(Ease.OutBounce).SetDelay(.3f);
-        toggleButton.DOScale(1, .3f).SetEase(Ease.OutBounce).SetDelay(.3f);
-        goBackButton.DOScale(0, .3f).SetEase(Ease.OutBounce).SetDelay(.3f);
+        puzzleInspectScreen.Toggle();
+        buildScreen.Toggle();
     }
 
     private void LevelCompleted()
     {
-        levelCompletedPanel.SetActive(true);
+        levelCompletedScreen.Toggle();
     }
 
     private void SendPuzzle(Transform obj)
     {
-        sendButton.DOScale(0, .3f).SetEase(Ease.OutBounce);
-        toggleButton.DOScale(0, .3f).SetEase(Ease.OutBounce);
+        buildScreen.Toggle();
     }
 
     private void GoBackButtonClicked()
     {
-        sendButton.DOScale(1, .3f).SetEase(Ease.OutBounce);
-        toggleButton.DOScale(1, .3f).SetEase(Ease.OutBounce);
-        goBackButton.DOScale(0, .3f).SetEase(Ease.OutBounce);
+        buildScreen.Toggle();
+        puzzleInspectScreen.Toggle();
     }
 
     private void OnDisable()
     {
-        EventManager.BoxHitThePuzzle += BoxHitThePuzzle;
+        EventManager.BoxHitThePuzzle -= BoxHitThePuzzle;
         EventManager.LevelCompleted -= LevelCompleted;
         EventManager.SendPuzzle -= SendPuzzle;
         EventManager.ChangeCameraToPuzzle -= ChangeCameraToPuzzle;
@@ -66,14 +62,30 @@ public class UIManager : MonoBehaviour
 
     private void ChangeCameraToPuzzle()
     {
-        
-        sendButton.DOScale(0, .3f).SetEase(Ease.OutBounce);
-        toggleButton.DOScale(0, .3f).SetEase(Ease.OutBounce);
-        goBackButton.DOScale(1, .3f).SetEase(Ease.OutBounce);
+        buildScreen.Toggle();
+        puzzleInspectScreen.Toggle();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TutorialShowed()
     {
+        buildScreen.Toggle();
+        var data = EventManager.GetLevelData();
+        data.firstPlay = false;
+        data.Save();
+    }
+    private void Start()
+    {
+        var data = EventManager.GetLevelData();
+        if (data.firstPlay)
+        {
+            startScreen.Toggle();
+            buildScreen.Toggle();
+        }
+        else
+        {
+            startScreen.gameObject.SetActive(false);
+        }
+
+
     }
 }

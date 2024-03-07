@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35a929b32e51d467e853e2cb6c8d42cd, type: 3}
   m_Name: Level Data
   m_EditorClassIdentifier: 
-  currentLevelIndex: 4
+  currentLevelIndex: 0
   maxLevelCount: 5
+  firstPlay: 1
