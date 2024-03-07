@@ -59,10 +59,14 @@ public class PuzzleController : MonoBehaviour
         if (DoneCubeCount == GapCubes.Count)
         {
             Debug.Log("Level Done");
+            EventManager.LevelCompleted();
         }
         else
         {
             Debug.Log("Level Failed");
+            EventManager.BoxHitThePuzzle();
+            DoneCubeCount = 0;
+
         }
     }
 

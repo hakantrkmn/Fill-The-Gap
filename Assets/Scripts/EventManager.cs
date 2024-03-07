@@ -14,6 +14,12 @@ public static class EventManager
 
     public static Action<ClickMode> ChangeClickMode;
 
+    public static Action LevelCompleted;
+    public static Action LevelFailed;
+
+    
+    public static Func<LevelData> GetLevelData;
+
     
     
     public static Action<BoxController,Vector3> BoxPlaced;

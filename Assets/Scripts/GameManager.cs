@@ -16,9 +16,21 @@ public class GameManager : MonoBehaviour
             return;
         } 
         instance = this;
-        DontDestroyOnLoad(this.gameObject);
     }
 
+
+    private void Start()
+    {
+        var data = EventManager.GetLevelData();
+        if (ES3.KeyExists("level"))
+        {
+            ES3.Load("level", data);
+        }
+        else
+        {
+            ES3.Save("level",data);
+        }
+    }
 
 
     public GameStates gameState;
@@ -27,12 +39,21 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
+        EventManager.LevelCompleted += LevelCompleted;
         EventManager.ChangeClickMode += mode => clickMode = mode;
         EventManager.ChangeGameState += state => gameState = state;
     }
 
+    private void LevelCompleted()
+    {
+        var data = EventManager.GetLevelData();
+        data.LevelCompleted();
+        gameState = GameStates.LevelCompleted;
+    }
+
     private void OnDisable()
     {
+        EventManager.LevelCompleted -= LevelCompleted;
         EventManager.ChangeClickMode -= mode => clickMode = mode;
         EventManager.ChangeGameState -= state => gameState = state;
         

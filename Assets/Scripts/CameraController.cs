@@ -23,12 +23,21 @@ public class CameraController : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.BoxHitThePuzzle += () => canRotate = true;
+        EventManager.BoxHitThePuzzle += BoxHitThePuzzle;
+        EventManager.LevelCompleted += LevelCompleted;
         EventManager.BoxDestroyed += BoxDestroyed;
         EventManager.BoxPlaced += BoxPlaced;
         EventManager.ChangeCameraToPuzzle += ChangeCameraToPuzzle;
         EventManager.SendButtonClicked += SendButtonClicked;
         EventManager.GoBackButtonClicked += GoBackButtonClicked;
+    }
+
+    private void LevelCompleted()
+    {
+        playerCameraWithFocus.Priority = 0;
+        PuzzleCamera.Priority = 10;
+        canRotate = true;
+        
     }
 
     private void BoxDestroyed(BoxController arg1, BoxController arg2)
@@ -55,6 +64,7 @@ public class CameraController : MonoBehaviour
         canRotate = false;
         playerCameraNoFocus.Priority = 0;
         playerCameraWithFocus.Priority = 10;
+        
     }
 
     private void GoBackButtonClicked()
@@ -65,12 +75,21 @@ public class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
-        EventManager.BoxHitThePuzzle -= () => canRotate = true;
+        EventManager.BoxHitThePuzzle -= BoxHitThePuzzle;
+        EventManager.LevelCompleted -= LevelCompleted;
         EventManager.BoxDestroyed -= BoxDestroyed;
         EventManager.BoxPlaced -= BoxPlaced;
         EventManager.SendButtonClicked -= SendButtonClicked;
         EventManager.ChangeCameraToPuzzle -= ChangeCameraToPuzzle;
         EventManager.GoBackButtonClicked -= GoBackButtonClicked;
+    }
+
+    private void BoxHitThePuzzle()
+    {
+        canRotate = true;
+        playerCameraNoFocus.Priority = 10;
+        playerCameraWithFocus.Priority = 0;
+        PuzzleCamera.Priority = 0;
     }
 
     private void Start()
@@ -79,6 +98,7 @@ public class CameraController : MonoBehaviour
         player = FindObjectOfType<PlayerController>().transform;
         lastPlacedBox = player.GetComponent<PlayerController>().startBox.transform;
         playerCameraNoFocus.transform.DOLookAt(lastPlacedBox.position, .5f);
+        playerCameraNoFocus.Follow = lastPlacedBox;
     }
 
     private void ChangeCameraToPuzzle()
@@ -102,8 +122,6 @@ public class CameraController : MonoBehaviour
                 {
                     if (PuzzleCamera.Priority > playerCameraNoFocus.Priority)
                     {
-                        //EventManager.ChangeGameState(GameStates.CameraRotating);
-
 
                         PuzzleCamera.transform.RotateAround(Puzzle.middlePoint.position, Vector3.up,
                             Input.GetAxis("Mouse X") * rotationSpeed);
@@ -120,7 +138,7 @@ public class CameraController : MonoBehaviour
                     }
                 }
             }
-            else if (Input.GetMouseButtonUp(0) && GameManager.instance.gameState != GameStates.OnPuzzle)
+            else if (Input.GetMouseButtonUp(0) && GameManager.instance.gameState != GameStates.OnPuzzle && GameManager.instance.gameState != GameStates.LevelCompleted)
             {
                 EventManager.ChangeGameState(GameStates.PlaceBox);
             }

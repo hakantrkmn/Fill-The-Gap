@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     float _timer;
     public LayerMask boxLayer;
     private Vector3 _firstPos;
-
+    public AnimationCurve puzzleEase;
 
     private void Start()
     {
@@ -37,8 +37,7 @@ public class PlayerController : MonoBehaviour
     private void PuzzleHitTheBox()
     {
         tw.Kill();
-        Debug.Log("Level Failed");
-        transform.DOMove(_firstPos, 1f);
+        transform.DOMove(_firstPos, 1f).SetDelay(.3f);
     }
 
 
@@ -93,7 +92,7 @@ public class PlayerController : MonoBehaviour
     private void SendPuzzle(Transform MovePoint)
     {
         GameManager.instance.gameState = GameStates.PuzzleOnWay;
-        tw = transform.DOMoveZ(MovePoint.position.z, 4).OnComplete(() => { EventManager.PuzzleArrived(); });
+        tw = transform.DOMoveZ(MovePoint.position.z, 2).SetEase(puzzleEase).OnComplete(() => { EventManager.PuzzleArrived(); });
     }
     void PlaceBox(Vector3 hitPosition, Vector3 pos)
     {

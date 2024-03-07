@@ -11,6 +11,7 @@ public enum GameStates
     CameraRotating,
     OnPuzzle,
     PuzzleOnWay,
+    LevelCompleted,
 }
 
 public enum ClickMode
