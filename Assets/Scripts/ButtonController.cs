@@ -11,7 +11,14 @@ public class ButtonController : MonoBehaviour
         switch (type)
         {
             case ButtonTypes.SendThePuzzle:
-                EventManager.SendButtonClicked();
+                if (!EventManager.HaveExtraCube())
+                {
+                    EventManager.SendButtonClicked();
+                }
+                else
+                {
+                    EventManager.LotsOfCube();
+                }
                 break;
             case ButtonTypes.GoBack:
                 EventManager.ChangeGameState(GameStates.PlaceBox);

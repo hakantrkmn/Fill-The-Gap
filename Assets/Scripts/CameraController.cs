@@ -33,6 +33,7 @@ public class CameraController : MonoBehaviour
 
     private void LevelCompleted()
     {
+        PuzzleCamera.transform.DOLookAt(Puzzle.middlePoint.position, .5f);
         playerCameraWithFocus.Priority = 0;
         PuzzleCamera.Priority = 10;
         canRotate = true;
@@ -107,6 +108,7 @@ public class CameraController : MonoBehaviour
         PuzzleCamera.Priority = 10;
     }
 
+    
     private void Update()
     {
         if (canRotate)
@@ -133,7 +135,8 @@ public class CameraController : MonoBehaviour
                         playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position, Vector3.up,
                             Input.GetAxis("Mouse X") * rotationSpeed* Time.deltaTime);
                         playerCameraNoFocus.transform.RotateAround(lastPlacedBox.position,
-                            playerCameraNoFocus.transform.right, Input.GetAxis("Mouse Y") * -rotationSpeed* Time.deltaTime);
+                            playerCameraNoFocus.transform.right, Input.GetAxis("Mouse Y") * -rotationSpeed * Time.deltaTime);
+                        mouseStartPos = Input.mousePosition;
                     }
                 }
             }

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Level Data
   m_EditorClassIdentifier: 
   currentLevelIndex: 0
-  maxLevelCount: 5
+  maxLevelCount: 23
   firstPlay: 1

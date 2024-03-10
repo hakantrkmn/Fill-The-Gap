@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
 
     private void BoxHitThePuzzle()
     {
-        puzzleInspectScreen.Toggle();
+        //puzzleInspectScreen.Toggle();
         buildScreen.Toggle();
     }
 

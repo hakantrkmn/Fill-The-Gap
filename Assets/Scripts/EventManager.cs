@@ -20,11 +20,20 @@ public static class EventManager
     
     public static Func<LevelData> GetLevelData;
     public static Func<Vector3> GetStartCubePos;
+    public static Func<int> GetMaxCubeAmount;
+
+    
+    public static Func<bool> HaveExtraCube;
 
     
     
     public static Action<BoxController,Vector3> BoxPlaced;
     public static Action<BoxController,BoxController> BoxDestroyed;
+
+    public static Action LotsOfCube;
+
+    
+    public static Action PuzzleIsReady;
 
     
     

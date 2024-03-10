@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7019679371055314536}
   - component: {fileID: 9086681941119152323}
   - component: {fileID: 800301653674701822}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PuzzleCube
   m_TagString: Puzzle
   m_Icon: {fileID: 0}
@@ -118,3 +118,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac32142c063c76746a4b385328a8a1b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  points: []

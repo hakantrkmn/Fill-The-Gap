@@ -51,7 +51,8 @@ public class PlayerController : MonoBehaviour
         if (selectedBox != startBox)
         {
             placedBoxes.Remove(selectedBox);
-            EventManager.BoxDestroyed(selectedBox,placedBoxes.Count == 0 ? startBox:placedBoxes[Random.Range(0,placedBoxes.Count)]);
+            EventManager.BoxDestroyed(selectedBox,
+                placedBoxes.Count == 0 ? startBox : placedBoxes[Random.Range(0, placedBoxes.Count)]);
             selectedBox.gameObject.SetActive(false);
         }
     }
@@ -59,13 +60,14 @@ public class PlayerController : MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
     private BoxController lastHitBox;
+
     private void Update()
     {
         if (GameManager.instance.gameState == GameStates.PlaceBox)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonUp(0))
             {
-                if (GameManager.instance.clickMode==ClickMode.Destroy)
+                if (GameManager.instance.clickMode == ClickMode.Destroy)
                 {
                     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out hit, 100, boxLayer))
@@ -81,23 +83,25 @@ public class PlayerController : MonoBehaviour
                     if (Physics.Raycast(ray, out hit, 100, boxLayer))
                     {
                         PlaceBox(hit.transform.position, hit.normal);
-                        GameManager.instance.gameState = GameStates.PlaceBox;
+                            GameManager.instance.gameState = GameStates.PlaceBox;
+                        
                     }
                 }
             }
         }
-       
     }
 
     private void SendPuzzle(Transform MovePoint)
     {
         GameManager.instance.gameState = GameStates.PuzzleOnWay;
-        transform.DOMoveZ(MovePoint.position.z, 2).SetId("Fill").SetEase(puzzleEase).OnComplete(() => { EventManager.PuzzleArrived(); });
+        transform.DOMoveZ(MovePoint.position.z, 2).SetId("Fill").SetEase(puzzleEase)
+            .OnComplete(() => { EventManager.PuzzleArrived(); });
     }
+
     void PlaceBox(Vector3 hitPosition, Vector3 pos)
     {
         var temp = Instantiate(boxPrefab, hitPosition + pos, Quaternion.identity, transform);
         placedBoxes.Add(temp.GetComponent<BoxController>());
-        EventManager.BoxPlaced(temp.GetComponent<BoxController>(),pos);
+        EventManager.BoxPlaced(temp.GetComponent<BoxController>(), pos);
     }
 }
